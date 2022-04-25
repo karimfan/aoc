@@ -104,6 +104,6 @@ func part_two() {
 }
 
 func main() {
-	//part_one()
+	part_one()
 	part_two()
 }
