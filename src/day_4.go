@@ -8,7 +8,6 @@ package main
 
 import (
 	"bufio"
-	"container/list"
 	"flag"
 	"fmt"
 	"log"
@@ -104,12 +103,10 @@ func (b *board) playMove(number int64) (bool, int64) {
 
 // comma delimited like so: 91,17,64,45,8,13,
 func readGameInput(line string) []string {
-	list.New()
 	return strings.Split(line, ",")
 }
 
 func playTurns(game []string, boards []board, m mode) (board, int64) {
-
 	var last_winning_board board
 	var last_winning_val int64 = 10
 
@@ -133,13 +130,12 @@ func playTurns(game []string, boards []board, m mode) (board, int64) {
 
 		}
 	}
-
 	return last_winning_board, last_winning_val
 }
 
 func playGame(inputFile string, m mode) (board, int64) {
 	var game []string
-	boards := []board{}
+	var boards = []board{}
 
 	file, err := os.Open(inputFile)
 	if err != nil {
