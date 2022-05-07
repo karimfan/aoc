@@ -20,6 +20,13 @@ import (
 const grid_width = 5
 const grid_length = 5
 
+type mode int
+
+const (
+	FirstWins mode = iota
+	LastWins
+)
+
 type grid_item struct {
 	marked bool
 	value  int64
@@ -27,7 +34,7 @@ type grid_item struct {
 
 type board struct {
 	grid             [grid_width][grid_length]grid_item
-	horitzonal_score [grid_length]int
+	horizontal_score [grid_length]int
 	vertical_score   [grid_length]int
 }
 
@@ -35,7 +42,7 @@ func (b *board) printBoard() {
 	fmt.Printf("------------BOARD BEGIN----------------\n")
 	for i := 0; i < grid_width; i++ {
 		for j := 0; j < grid_length; j++ {
-			fmt.Printf("%d,", b.grid[i][j].value)
+			fmt.Printf("%d=%t,", b.grid[i][j].value, b.grid[i][j].marked)
 		}
 		fmt.Printf("\n")
 	}
@@ -79,10 +86,10 @@ func (b *board) playMove(number int64) (bool, int64) {
 		for j := 0; j < grid_width; j++ {
 			if b.grid[i][j].value == number {
 				b.grid[i][j].marked = true
-				b.horitzonal_score[i]++
+				b.horizontal_score[i]++
 				b.vertical_score[j]++
 
-				if b.vertical_score[j] == grid_width || b.horitzonal_score[i] == grid_length {
+				if b.vertical_score[j] == grid_width || b.horizontal_score[i] == grid_length {
 					val = b.sumUnmarkedCells()
 					val *= number
 					bingo = true
@@ -101,27 +108,38 @@ func readGameInput(line string) []string {
 	return strings.Split(line, ",")
 }
 
-func playGame(game []string, boards *list.List) {
+func playTurns(game []string, boards []board, m mode) (board, int64) {
+
+	var last_winning_board board
+	var last_winning_val int64 = 10
 
 	for i := 0; i < len(game); i++ {
 		number, _ := strconv.ParseInt(game[i], 10, 64)
-		for e := boards.Front(); e != nil; e = e.Next() {
-			b := e.Value.(*board)
+		for e := 0; e < len(boards); e++ {
+			b := &boards[e]
 			bingo, val := b.playMove(number)
 
 			if bingo == true {
-				fmt.Printf("BINGO!!\n")
-				b.printBoard()
-				fmt.Printf("Winning board val is %d\n", val)
-				return
+				last_winning_board = *b
+				last_winning_val = val
+				if m == FirstWins {
+					return last_winning_board, last_winning_val
+				} else {
+					// reset to continue finding the last board
+					boards = append(boards[:e], boards[e+1:]...)
+					e--
+				}
 			}
+
 		}
 	}
+
+	return last_winning_board, last_winning_val
 }
 
-func readGame(inputFile string) {
+func playGame(inputFile string, m mode) (board, int64) {
 	var game []string
-	boards := list.New()
+	boards := []board{}
 
 	file, err := os.Open(inputFile)
 	if err != nil {
@@ -132,7 +150,7 @@ func readGame(inputFile string) {
 	scanner := bufio.NewScanner(file)
 	readOrder := false
 	row_number := 0
-	current_board := new(board)
+	current_board := board{}
 
 	for scanner.Scan() {
 
@@ -151,16 +169,24 @@ func readGame(inputFile string) {
 			}
 
 			if row_number == grid_length {
-				boards.PushBack(current_board)
-				current_board = new(board)
+				boards = append(boards, current_board)
+				current_board = board{}
 				row_number = 0
 			}
 		}
 	}
-	playGame(game, boards)
+	return playTurns(game, boards, m)
+
 }
 
 func main() {
 	inputFilePath := flag.String("input", "../input/day_4.txt", "Path of file to be processed")
-	readGame(*inputFilePath)
+
+	b, v := playGame(*inputFilePath, FirstWins)
+	b.printBoard()
+	fmt.Printf("First winning board val is %d\n", v)
+
+	b, v = playGame(*inputFilePath, LastWins)
+	b.printBoard()
+	fmt.Printf("Last winning board val is %d\n", v)
 }
