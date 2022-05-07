@@ -46,7 +46,6 @@ func (b *board) printBoard() {
 // row can look like so "36 33 18 54 10" Can have multiple spaces between values
 func (b *board) addRow(row string, row_number int) {
 	var values = strings.Split(row, " ")
-
 	// There could be empty strings in the row. Omit them
 	index := 0
 	for j := 0; j < len(values); j++ {
