@@ -86,7 +86,6 @@ func readReadings(inputFile string) []string {
 		readings = append(readings, line)
 	}
 	return readings
-
 }
 
 func main() {
