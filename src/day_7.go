@@ -81,7 +81,10 @@ func DaySevenProcessor(line string) {
 	for i := 0; i <= crabs[len(crabs)-1]; i++ {
 		positions = append(positions, i)
 	}
-	min := FindMinimum(crabs, positions, 0, len(positions)-1, CostWithDecay)
+	min := FindMinimum(crabs, crabs, 0, len(crabs)-1, CostWithoutDecay)
+	fmt.Println(min)
+
+	min = FindMinimum(crabs, positions, 0, len(positions)-1, CostWithDecay)
 	fmt.Println(min)
 }
 
