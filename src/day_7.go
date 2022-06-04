@@ -63,7 +63,7 @@ func FindMinimum(crabs []int, positions []int, start int, end int, cost func(cra
 	}
 
 	if cost_at_mid < cost_at_end {
-		return FindMinimum(crabs, positions, start, mid - 1, cost)
+		return FindMinimum(crabs, positions, start, mid-1, cost)
 	} else if cost_at_mid > cost_at_end {
 		return FindMinimum(crabs, positions, mid+1, end, cost)
 	} else {
