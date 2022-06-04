@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func CalculateCost(crabs []int, val int) int {
+func CostWithoutDecay(crabs []int, val int) int {
 	var cost = 0
 	for _, c := range crabs {
 		if c < val {
@@ -21,33 +21,67 @@ func CalculateCost(crabs []int, val int) int {
 	return cost
 }
 
-func FindMinimum(crabs []int, start int, end int) int {
-	var mid = start + ((end - start) / 2)
-
-	if start == end {
-		return CalculateCost(crabs, crabs[start])
+func CostWithDecay(crabs []int, val int) int {
+	var cost = 0
+	var delta = 0
+	for _, c := range crabs {
+		if c < val {
+			delta = val - c
+			cost += delta
+			cost += GaussSum(delta)
+		} else {
+			delta = c - val
+			cost += delta
+			cost += GaussSum(delta)
+		}
 	}
 
-	cost_at_end := CalculateCost(crabs, crabs[end])
-	cost_at_mid := CalculateCost(crabs, crabs[mid])
+	return cost
+}
 
-	if cost_at_mid < cost_at_end {
-		return FindMinimum(crabs, start, mid)
+func GaussSum(end int) int {
+	return (end * (end - 1)) / 2
+}
+
+func FindMinimum(crabs []int, positions []int, start int, end int, cost func(crabs []int, val int) int) int {
+	var mid = start + ((end - start) / 2)
+
+	cost_at_start := cost(crabs, positions[start])
+	cost_at_end := cost(crabs, positions[end])
+
+	if start == end-1 {
+		if cost_at_start <= cost_at_end {
+			return cost_at_start
+		} else {
+			return cost_at_end
+		}
+	}
+
+	if start == end {
+		return cost_at_start
+	}
+
+	if cost_at_start < cost_at_end {
+		return FindMinimum(crabs, positions, start, mid, cost)
 	} else {
-		return FindMinimum(crabs, mid+1, end)
+		return FindMinimum(crabs, positions, mid, end, cost)
 	}
 }
 
 func DaySevenProcessor(line string) {
 	var vals = strings.Split(line, ",")
 	var crabs = []int{}
+	var positions = []int{}
 	for _, v := range vals {
 		k, _ := strconv.Atoi(v)
 		crabs = append(crabs, k)
 	}
 
 	sort.Ints(crabs)
-	min := FindMinimum(crabs, 0, len(crabs)-1)
+	for i := 0; i <= crabs[len(crabs)-1]; i++ {
+		positions = append(positions, i)
+	}
+	min := FindMinimum(crabs, positions, 0, len(positions)-1, CostWithDecay)
 	fmt.Println(min)
 }
 
