@@ -21,7 +21,7 @@ func SwapFish(value int, index int, fish []int) int {
 	return temp
 }
 
-func LineProcessor(line string) {
+func DaySixProcessor(line string) {
 	temp := strings.Split(line, ",")
 	var fish = make([]int, 9)
 	for j := range temp {
@@ -48,5 +48,5 @@ func LineProcessor(line string) {
 
 func main() {
 	inputFilePath := flag.String("input", "../input/day_6.txt", "Path of file to be processed")
-	common.ProcessFile(*inputFilePath, LineProcessor)
+	common.ProcessFile(*inputFilePath, DaySixProcessor)
 }

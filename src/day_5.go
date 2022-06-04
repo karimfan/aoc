@@ -175,5 +175,4 @@ func main() {
 	fmt.Printf("Points with >= 2 coverage = %d\n", count)
 	count = FilterPointsByCoverage(ProcessLines(IsLineHorizontalOrVerticalOrDiagonal, lines), 2)
 	fmt.Printf("Points with >= 2 coverage = %d\n", count)
-
 }
