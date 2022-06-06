@@ -43,14 +43,17 @@ func GaussSum(end int) int {
 	return (end * (end - 1)) / 2
 }
 
-func FindMinimum(crabs []int, positions []int, start int, end int, cost func(crabs []int, val int) int) int {
-	var mid = start + (1 + (end-start)/2)
+func FindMinimum(crabs []int, positions []int, cost func(crabs []int, val int) int) int {
+	var start = 0
+	var end = len(positions) - 1
+	var mid = start + ((end - start) / 2)
 
-	cost_at_start := cost(crabs, positions[start])
-	cost_at_end := cost(crabs, positions[end])
-	cost_at_mid := cost(crabs, positions[mid])
+	var cost_at_start = 0
+	var cost_at_end = 0
 
 	if start == end-1 {
+		cost_at_start = cost(crabs, positions[start])
+		cost_at_end = cost(crabs, positions[end])
 		if cost_at_start <= cost_at_end {
 			return cost_at_start
 		} else {
@@ -59,14 +62,18 @@ func FindMinimum(crabs []int, positions []int, start int, end int, cost func(cra
 	}
 
 	if start == end {
-		return cost_at_start
+		return cost(crabs, positions[start])
 	}
 
-	if cost_at_mid < cost_at_end {
-		return FindMinimum(crabs, positions, start, mid-1, cost)
+	var lhs = FindMinimum(crabs, positions[:mid], cost)
+	var rhs = FindMinimum(crabs, positions[mid:], cost)
+
+	if rhs <= lhs {
+		return rhs
 	} else {
-		return FindMinimum(crabs, positions, mid+1, end, cost)
+		return lhs
 	}
+
 }
 
 func DaySevenProcessor(line string) {
@@ -82,10 +89,10 @@ func DaySevenProcessor(line string) {
 	for i := 0; i <= crabs[len(crabs)-1]; i++ {
 		positions = append(positions, i)
 	}
-	min := FindMinimum(crabs, positions, 0, len(positions)-1, CostWithoutDecay)
+	min := FindMinimum(crabs, positions, CostWithoutDecay)
 	fmt.Println(min)
 
-	min = FindMinimum(crabs, positions, 0, len(positions)-1, CostWithDecay)
+	min = FindMinimum(crabs, positions, CostWithDecay)
 	fmt.Println(min)
 }
 
