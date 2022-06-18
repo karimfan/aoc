@@ -35,7 +35,6 @@ func CostWithDecay(crabs []int, val int) int {
 			cost += GaussSum(delta)
 		}
 	}
-
 	return cost
 }
 
@@ -50,7 +49,6 @@ func FindMinimum(crabs []int, positions []int, cost func(crabs []int, val int) i
 
 	var cost_at_start = 0
 	var cost_at_end = 0
-
 	if start == end-1 {
 		cost_at_start = cost(crabs, positions[start])
 		cost_at_end = cost(crabs, positions[end])
@@ -67,13 +65,11 @@ func FindMinimum(crabs []int, positions []int, cost func(crabs []int, val int) i
 
 	var lhs = FindMinimum(crabs, positions[:mid], cost)
 	var rhs = FindMinimum(crabs, positions[mid:], cost)
-
 	if rhs <= lhs {
 		return rhs
 	} else {
 		return lhs
 	}
-
 }
 
 func DaySevenProcessor(line string) {
@@ -91,7 +87,6 @@ func DaySevenProcessor(line string) {
 	}
 	min := FindMinimum(crabs, positions, CostWithoutDecay)
 	fmt.Println(min)
-
 	min = FindMinimum(crabs, positions, CostWithDecay)
 	fmt.Println(min)
 }
